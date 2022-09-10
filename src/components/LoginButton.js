@@ -14,7 +14,11 @@ const LoginButton = () => {
 
   const fullUrl = `${baseUri}?response_type=${responseType}&redirect_uri=${redirectUri}&client_id=${clientId}&state=${state}&scope=${scope}`
 
-  return <a href={fullUrl}>Login with Spotify</a>
+  return (
+    <a href={fullUrl} className="login-btn">
+      Login with Spotify
+    </a>
+  )
 }
 
 export default LoginButton

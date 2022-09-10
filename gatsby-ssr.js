@@ -1,14 +1,19 @@
 import React from "react"
-import theme from "./src/theme"
+import { Provider } from "react-redux"
+import { store } from "./src/app-redux/store"
 import { createGlobalStyle, ThemeProvider } from "styled-components"
 import Layout from "./src/components/Layout"
+import theme from "./src/theme"
 
 export const wrapRootElement = ({ element, props }) => {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles />
-      <Layout {...props}>{element}</Layout>
-    </ThemeProvider>
+    // redux provider
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <Layout {...props}>{element}</Layout>
+      </ThemeProvider>
+    </Provider>
   )
 }
 
@@ -30,7 +35,7 @@ const GlobalStyles = createGlobalStyle`
     with @reach/router, or maybe it was something else.
     layoutStyles.js makes a 100% height call as well.
   */
-  html, body, main, #gatsby-focus-wrapper, #gatsby-focus-wrapper > div {
+  html, body, main, #___gatsby, #gatsby-focus-wrapper, #gatsby-focus-wrapper > div {
     height: 100%;
   }
 

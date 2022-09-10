@@ -4,7 +4,9 @@ import { FooterContainer } from "../css"
 const Footer = () => {
   return (
     <FooterContainer>
-      <div className="content">footer</div>
+      <div className="content">
+        <a href="https://github.com/Greggoms/spotify-oauth">View on Github</a>
+      </div>
     </FooterContainer>
   )
 }

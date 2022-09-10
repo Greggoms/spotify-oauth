@@ -1,15 +1,9 @@
 const theme = {
   colors: {
-    colorDark: "#333350",
-    green: "#09A603",
-    link: "#00DEF2",
+    colorDark: "#191414",
+    green: "#1db954",
     linkDark: "#027CB5",
     linkLight: "#A7ECF2",
-    purple: "#B149BF",
-    red: "#F23D3D",
-    salmon: "#F26A6B",
-    yellow: "#F2CE16",
-    yellowLight: "#FAF1AC",
   },
   grayscale: {
     light1: "#F2F2F2",

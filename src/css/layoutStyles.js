@@ -20,8 +20,10 @@ export const LayoutContainer = styled.div`
     }
   }
 
-  .content {
+  .main-content {
     grid-area: content;
+    background: ${props => props.theme.colors.colorDark};
+    color: ${props => props.theme.grayscale.light1};
 
     main {
       padding: 1rem 2rem;

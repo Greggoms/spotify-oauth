@@ -6,7 +6,9 @@ const Header = () => {
   return (
     <HeaderContainer>
       <div className="content">
-        <Link to="/">header</Link>
+        <h1>
+          <Link to="/">spotify-oauth</Link>
+        </h1>
       </div>
     </HeaderContainer>
   )
