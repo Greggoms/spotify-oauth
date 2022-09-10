@@ -1,105 +1,102 @@
-<!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
-<p align="center">
-  <a href="https://www.gatsbyjs.com">
-    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby's hello-world starter
-</h1>
+# Spotify OAuth2 Testing
 
-Kick off your project with this hello-world boilerplate. This starter ships with the main Gatsby configuration files you might need to get up and running blazing fast with the blazing fast app generator for React.
+## Things to figure out
 
-_Have another more specific idea? You may want to check out our vibrant collection of [official and community-created starters](https://www.gatsbyjs.com/docs/gatsby-starters/)._
+- User loses their auth on page navigation/page refresh
+  - `error: Invalid authorization code`
+    - I think this is because of how I'm retrieving the url `code`
+      and using it inside a useEffect.
+  - Requires the user to re-authenticate befire making API calls.
+  - I will need to keep values stored, may whip out some redux..
+- Get user's currently playing track
+  - `https://api.spotify.com/v1/me/player/recently-played`
+  - Returns a list of 20 recently played tracks
+  - I will need to find a way to filter out what I'm looking for.
 
-## 🚀 Quick start
+## Challenges I've Overcome
 
-1.  **Create a Gatsby site.**
+- No express usage
+- No crypto-\* package usage
 
-    Use the Gatsby CLI ([install instructions](https://www.gatsbyjs.com/docs/tutorial/part-0/#gatsby-cli)) to create a new site, specifying the hello-world starter.
+---
 
-    ```shell
-    # create a new Gatsby site using the hello-world starter
-    gatsby new my-hello-world-starter https://github.com/gatsbyjs/gatsby-starter-hello-world
-    ```
+[Spotify Docs - Web API](https://developer.spotify.com/documentation/web-api/)
 
-1.  **Start developing.**
+You can use Spotify's Web API to discover music and podcasts,
+manage your Spotify library, control audio playback, and much more.
+Browse our available Web API endpoints using the sidebar at left,
+or via the navigation bar on top of this page on smaller screens.
 
-    Navigate into your new site’s directory and start it up.
+In order to make successful Web API requests your app will need a
+valid access token. One can be obtained through OAuth 2.0.
 
-    ```shell
-    cd my-hello-world-starter/
-    gatsby develop
-    ```
+The base URI for all Web API requests is `https://api.spotify.com/v1`.
 
-1.  **Open the source code and start editing!**
+## Authorization Code Flow
 
-    Your site is now running at `http://localhost:8000`!
+[Spotify Docs - Authorization Code Flow](https://developer.spotify.com/documentation/general/guides/authorization/code-flow/)
 
-    _Note: You'll also see a second link: _`http://localhost:8000/___graphql`_. This is a tool you can use to experiment with querying your data. Learn more about using this tool in the [Gatsby Tutorial](https://www.gatsbyjs.com/docs/tutorial/part-4/#use-graphiql-to-explore-the-data-layer-and-write-graphql-queries)._
+If you’re using the authorization code flow in a mobile app, or
+any other type of application where the client secret can’t be
+safely stored, then you should use the PKCE extension.
 
-    Open the `my-hello-world-starter` directory in your code editor of choice and edit `src/pages/index.js`. Save your changes and the browser will update in real time!
+If you are implementing the PKCE extension, you must include
+these additional parameters:
 
-## 🚀 Quick start (Gatsby Cloud)
+- code_challenge_method: **Required**. Set to S256.
+- code_challenge: **Required**. Set to the code challenge that
+  your app calculated in step 1.
 
-Deploy this starter with one click on [Gatsby Cloud](https://www.gatsbyjs.com/cloud/):
+In order to generate the code_challenge, your app should hash
+the code verifier using the SHA256 algorithm. The code verifier
+is a random string between 43 and 128 characters in length. It
+can contain letters, digits, underscores, periods, hyphens, or tildes.
 
-[<img src="https://www.gatsbyjs.com/deploynow.svg" alt="Deploy to Gatsby Cloud">](https://www.gatsbyjs.com/dashboard/deploynow?url=https://github.com/gatsbyjs/gatsby-starter-hello-world)
+## Request Access Token
 
-## 🧐 What's inside?
+If the user accepted your request, then your app is ready to
+exchange the authorization code for an Access Token. It can do
+this by making a POST request to the /api/token endpoint.
 
-A quick look at the top-level files and directories you'll see in a Gatsby project.
+The body of this POST request must contain the following
+parameters encoded in `application/x-www-form-urlencoded`:
 
-    .
-    ├── node_modules
-    ├── src
-    ├── .gitignore
-    ├── .prettierrc
-    ├── gatsby-browser.js
-    ├── gatsby-config.js
-    ├── gatsby-node.js
-    ├── gatsby-ssr.js
-    ├── LICENSE
-    ├── package-lock.json
-    ├── package.json
-    └── README.md
+- `grant_type`: **Required**. This field must contain the
+  value `"authorization_code"`.
+- `code`: **Required**. The authorization code returned from
+  the previous request.
+- `redirect_uri`: **Required**. This parameter is used for
+  validation only (there is no actual redirection). The
+  value of this parameter must exactly match the value
+  of `redirect_uri` supplied when requesting the authorization
+  code.
 
-1.  **`/node_modules`**: This directory contains all of the modules of code that your project depends on (npm packages) are automatically installed.
+If you are implementing the PKCE extension, these additional
+parameters must be included as well:
 
-2.  **`/src`**: This directory will contain all of the code related to what you will see on the front-end of your site (what you see in the browser) such as your site header or a page template. `src` is a convention for “source code”.
+- client_id: **Required**. The client ID for your app, available from
+  the developer dashboard.
+- client_id: **Required**. The value of this parameter must match the
+  value of the code_verifier that your app generated in the previous step.
 
-3.  **`.gitignore`**: This file tells git which files it should not track / not maintain a version history for.
+The request must include the following HTTP headers:
 
-4.  **`.prettierrc`**: This is a configuration file for [Prettier](https://prettier.io/). Prettier is a tool to help keep the formatting of your code consistent.
+- Authorization: **Required**. Base 64 encoded string that contains
+  the client ID and client secret key. The field must have the format:
+  Authorization: Basic `<base64 encoded client_id:client_secret>`
+- Content-Type: **Required**. Set to `application/x-www-form-urlencoded`.
 
-5.  **`gatsby-browser.js`**: This file is where Gatsby expects to find any usage of the [Gatsby browser APIs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/) (if any). These allow customization/extension of default Gatsby settings affecting the browser.
+## PKCE or Not?
 
-6.  **`gatsby-config.js`**: This is the main configuration file for a Gatsby site. This is where you can specify information about your site (metadata) like the site title and description, which Gatsby plugins you’d like to include, etc. (Check out the [config docs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/) for more detail).
+Everywhere I look, OAuth suggests that if you can't secure your keys
+then you should use the PKCE extension. My keys are in a .env but they
+are exposed in the fetch request payload.. I've tried many crypto libraries
+to create and convert random strings to hashes and base64urlencoded values
+to no avail. I'm always returned with an `invalid code_verifier` response.
 
-7.  **`gatsby-node.js`**: This file is where Gatsby expects to find any usage of the [Gatsby Node APIs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/) (if any). These allow customization/extension of default Gatsby settings affecting pieces of the site build process.
+In order to get results, I removed any crypto/hash/base64 usage. For the
+first time in my life, I have acheieved OAuth2.0 Authentication Code Flow.
 
-8.  **`gatsby-ssr.js`**: This file is where Gatsby expects to find any usage of the [Gatsby server-side rendering APIs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/) (if any). These allow customization of default Gatsby settings affecting server-side rendering.
+This video by Maker At Play Coding helped shed light on my problem.
 
-9.  **`LICENSE`**: This Gatsby starter is licensed under the 0BSD license. This means that you can see this file as a placeholder and replace it with your own license.
-
-10. **`package-lock.json`** (See `package.json` below, first). This is an automatically generated file based on the exact versions of your npm dependencies that were installed for your project. **(You won’t change this file directly).**
-
-11. **`package.json`**: A manifest file for Node.js projects, which includes things like metadata (the project’s name, author, etc). This manifest is how npm knows which packages to install for your project.
-
-12. **`README.md`**: A text file containing useful reference information about your project.
-
-## 🎓 Learning Gatsby
-
-Looking for more guidance? Full documentation for Gatsby lives [on the website](https://www.gatsbyjs.com/). Here are some places to start:
-
-- **For most developers, we recommend starting with our [in-depth tutorial for creating a site with Gatsby](https://www.gatsbyjs.com/tutorial/).** It starts with zero assumptions about your level of ability and walks through every step of the process.
-
-- **To dive straight into code samples, head [to our documentation](https://www.gatsbyjs.com/docs/).** In particular, check out the _Guides_, _API Reference_, and _Advanced Tutorials_ sections in the sidebar.
-
-## 💫 Deploy
-
-[Build, Deploy, and Host On The Only Cloud Built For Gatsby](https://www.gatsbyjs.com/products/cloud/)
-
-Gatsby Cloud is an end-to-end cloud platform specifically built for the Gatsby framework that combines a modern developer experience with an optimized, global edge network.
-
-<!-- AUTO-GENERATED-CONTENT:END -->
+[How to Authenticate and use Spotify Web API](https://www.youtube.com/watch?v=1vR3m0HupGI&t=93s)
