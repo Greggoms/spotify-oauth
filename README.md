@@ -10,6 +10,9 @@
   - I will need to keep values stored, may whip out some redux..
 - Get user's currently playing track
   - `https://api.spotify.com/v1/me/player/recently-played`
+    - May need to use `https://api.spotify.com/v1/me/player/recently-played`
+      instead.
+    - [Spotify Docs - Web API - Current Playback](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback)
   - Returns a list of 20 recently played tracks
   - I will need to find a way to filter out what I'm looking for.
 
